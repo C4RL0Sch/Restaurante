@@ -1,5 +1,5 @@
 <?php
-require_once("../../conexion.php");
+include("../../conexion.php");
 
 $id = trim($_POST['id'] ?? '');
 $nombre = trim($_POST['nombre'] ?? '');
@@ -21,7 +21,7 @@ if (mysqli_num_rows($existe) > 0) {
     exit("El proveedor ya está registrado.");
 }
 
-$stmt = mysqli_prepare($conexion, "INSERT INTO proveedores (idProveedor, Nombre, Telefono, Direccion) VALUES (?, ?, ?)");
+$stmt = mysqli_prepare($conexion, "INSERT INTO proveedores (idProveedor, Nombre, Telefono, Direccion) VALUES (?, ?, ?, ?)");
 mysqli_stmt_bind_param($stmt, "isss", $id, $nombre, $telefono, $direccion);
 
 if (mysqli_stmt_execute($stmt)) {
@@ -31,3 +31,4 @@ if (mysqli_stmt_execute($stmt)) {
 }
 
 mysqli_stmt_close($stmt);
+?>

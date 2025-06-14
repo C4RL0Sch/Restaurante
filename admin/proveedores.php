@@ -64,7 +64,7 @@ $resultado = mysqli_query($conexion, "SELECT * FROM proveedores");
                     <div class="modal-body mx-2">
                         <div class="row mb-2">
                             <label for="id" class="form-label px-0 mb-0"><b>ID:</b></label>
-                            <input type="text" disabled maxlength="10" class="form-control" id="editar-id" name="id" placeholder="ID del proveedor">
+                            <input type="text" readonly maxlength="10" class="form-control" id="editar-id" name="id" placeholder="ID del proveedor">
                         </div>
                         <div class="row mb-2">
                             <label for="editar-nombre" class="form-label px-0 mb-0"><b>Nombre:</b></label>

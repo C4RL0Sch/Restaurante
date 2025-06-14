@@ -1,7 +1,7 @@
 window.abrirModal = function (rol) {
     document.getElementById("modal-title").innerText = "Registrar Usuario";
     document.getElementById("formUsuario").reset();
-    document.getElementById("usuario-id").removeAttribute('disabled');
+    document.getElementById("usuario-id").removeAttribute('readonly');
     document.getElementById("usuario-id").value = "";
     document.getElementById("usuario-rol").value = rol;
     document.getElementById("password-group").style.display = "block";
@@ -30,7 +30,7 @@ document.querySelector("#usuario-id").addEventListener('keypress', function (e) 
 document.querySelectorAll(".btn-editar").forEach(btn => {
     btn.addEventListener("click", () => {
         document.getElementById("modal-title").innerText = "Editar Usuario";
-        document.getElementById("usuario-id").setAttribute('disabled', 'true');
+        document.getElementById("usuario-id").setAttribute('readonly', 'true');
         document.getElementById("usuario-id").value = btn.dataset.id;
         document.getElementById("usuario-nombre").value = btn.dataset.nombre;
         document.getElementById("usuario-usuario").value = btn.dataset.usuario;
@@ -87,7 +87,7 @@ document.getElementById("formUsuario")?.addEventListener("submit", function (e) 
     }
 
     const datos = new FormData(this);
-    const archivo = (document.getElementById("usuario-id").hasAttribute('disabled')) ? "usuarios/editar_usuario.php" : "usuarios/guardar_usuario.php";
+    const archivo = (document.getElementById("usuario-id").hasAttribute('readonly')) ? "usuarios/editar_usuario.php" : "usuarios/guardar_usuario.php";
 
     console.log(archivo);
 

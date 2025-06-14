@@ -90,7 +90,7 @@ WHERE i.idProveedor = p.idProveedor ORDER BY i.idIngrediente ASC");
                     <div class="modal-body mx-2">
                         <div class="row mb-2">
                             <label for="id" class="form-label px-0 mb-0"><b>ID:</b></label>
-                            <input type="text" maxlength="10" disabled class="form-control" id="editar-id" name="id" placeholder="ID del ingrediente">
+                            <input type="text" maxlength="10" readonly class="form-control" id="editar-id" name="id" placeholder="ID del ingrediente">
                         </div>
                         <div class="row mb-2">
                             <label for="editar-nombre" class="form-label px-0 mb-0"><b>Nombre:</b></label>

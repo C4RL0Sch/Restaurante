@@ -23,7 +23,7 @@ if (mysqli_num_rows($existe) > 0) {
     exit("El ingrediente ya está registrado.");
 }
 
-$stmt = $conexion->prepare("INSERT INTO ingredientes (idIngrediente, Nombre, Medida, Cantidad, Costo, idProveedor) VALUES (?, ?, ?, ?, ?)");
+$stmt = $conexion->prepare("INSERT INTO ingredientes (idIngrediente, Nombre, Medida, Cantidad, Costo, idProveedor) VALUES (?, ?, ?, ?, ?, ?)");
 $stmt->bind_param("issddi", $id, $nombre, $medida, $cantidad, $costo, $idProveedor);
 
 if ($stmt->execute()) {
