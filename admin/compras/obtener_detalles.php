@@ -30,17 +30,13 @@ $total = 0;
   </thead>
   <tbody>
     <?php while ($d = mysqli_fetch_assoc($detalle)):
-      $cantidad = $d['Medida'] === 'Kilogramos' || $d['Medida'] === 'Litros'
-        ? number_format($d['Cantidad'], 3)
-        : (int)$d['Cantidad'];
-
       $subtotal = $d['Cantidad'] * $d['CostoUnitario'];
       $total += $subtotal;
     ?>
     <tr>
       <td><?= htmlspecialchars($d['Nombre']) ?></td>
       <td><?= $d['Medida'] ?></td>
-      <td><?= $cantidad ?></td>
+      <td><?=  $d['Cantidad'] ?></td>
       <td>$<?= number_format($d['CostoUnitario'], 2) ?></td>
       <td>$<?= number_format($subtotal, 2) ?></td>
     </tr>

@@ -21,8 +21,8 @@ if (mysqli_num_rows($existe) > 0) {
     exit("El proveedor ya está registrado.");
 }
 
-$stmt = mysqli_prepare($conexion, "INSERT INTO proveedores (Nombre, Telefono, Direccion) VALUES (?, ?, ?, ?)");
-mysqli_stmt_bind_param($stmt, "sss", $id, $nombre, $telefono, $direccion);
+$stmt = mysqli_prepare($conexion, "INSERT INTO proveedores (idProveedor, Nombre, Telefono, Direccion) VALUES (?, ?, ?, ?)");
+mysqli_stmt_bind_param($stmt, "isss", $id, $nombre, $telefono, $direccion);
 
 if (mysqli_stmt_execute($stmt)) {
     echo "✅ Proveedor registrado correctamente.";

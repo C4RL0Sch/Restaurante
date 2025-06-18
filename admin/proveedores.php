@@ -24,23 +24,19 @@ $resultado = mysqli_query($conexion, "SELECT * FROM proveedores");
                     <div class="modal-body mx-2">
                         <div class="row mb-2">
                             <label for="id" class="form-label px-0 mb-0"><b>ID:</b></label>
-                            <input type="text" maxlength="10" class="form-control" id="id" name="id" placeholder="ID del proveedor">
-                            <span id="error-id" class="text-danger d-none"></span>
+                            <input type="number" maxlength="10" class="form-control" id="id" name="id" placeholder="ID del proveedor">
                         </div>
                         <div class="row mb-2">
                             <label for="nombre" class="form-label px-0 mb-0"><b>Nombre:</b></label>
                             <input type="text" maxlength="80" class="form-control" id="nombre" name="nombre" placeholder="Nombre del proveedor">
-                            <span id="error-nombre" class="text-danger d-none"></span>
                         </div>
                         <div class="row mb-2">
                             <label for="telefono" class="form-label px-0 mb-0"><b>Telefono:</b></label>
-                            <input type="text" maxlength="12" class="form-control" id="telefono" name="telefono" placeholder="Teléfono">
-                            <span class="text-danger d-none" id="error-telefono"></span>
+                            <input type="number" maxlength="12" class="form-control" id="telefono" name="telefono" placeholder="Teléfono">
                         </div>
                         <div class="row mb-2">
                             <label for="direccion" class="form-label px-0 mb-0"><b>Dirección:</b></label>
                             <input type="text" maxlength="100" class="form-control" id="direccion" name="direccion" placeholder="Dirección">
-                            <span id="error-direccion" class="text-danger d-none"></span>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -64,22 +60,19 @@ $resultado = mysqli_query($conexion, "SELECT * FROM proveedores");
                     <div class="modal-body mx-2">
                         <div class="row mb-2">
                             <label for="id" class="form-label px-0 mb-0"><b>ID:</b></label>
-                            <input type="text" readonly maxlength="10" class="form-control" id="editar-id" name="id" placeholder="ID del proveedor">
+                            <input type="number" readonly maxlength="10" class="form-control" id="editar-id" name="id" placeholder="ID del proveedor">
                         </div>
                         <div class="row mb-2">
                             <label for="editar-nombre" class="form-label px-0 mb-0"><b>Nombre:</b></label>
                             <input type="text" maxlength="80" class="form-control" name="nombre" id="editar-nombre" placeholder="Nombre">
-                            <span id="error-editar-nombre" class="text-danger d-none"></span>
                         </div>
                         <div class="row mb-2">
                             <label for="editar-telefono" class="form-label px-0 mb-0"><b>Telefono:</b></label>
-                            <input type="text" maxlength="12" class="form-control" name="telefono" id="editar-telefono" placeholder="Teléfono">
-                            <span id="error-editar-telefono" class="text-danger d-none"></span>
+                            <input type="number" maxlength="12" class="form-control" name="telefono" id="editar-telefono" placeholder="Teléfono">
                         </div>
                         <div class="row mb-2">
                             <label for="editar-direccion" class="form-label px-0 mb-0"><b>Dirección:</b></label>
                             <input type="text" maxlength="100" class="form-control" name="direccion" id="editar-direccion" placeholder="Dirección">
-                            <span id="error-editar-direccion" class="text-danger d-none"></span>
                         </div>
 
                     </div>

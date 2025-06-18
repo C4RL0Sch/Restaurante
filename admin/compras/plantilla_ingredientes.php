@@ -21,15 +21,12 @@ ob_start();
         </option>
       <?php endwhile; ?>
     </select>
-    <div class="invalid-feedback">Debe seleccionar un ingrediente</div>
   </div>
   <div class="col-md-3">
-    <input type="text" name="cantidades[]" class="form-control cantidad-dinamica" placeholder="Cantidad" required>
-    <div class="invalid-feedback">Debe ingresar una cantidad valida</div>
+    <input type="number" name="cantidades[]" class="form-control cantidad-dinamica" placeholder="Cantidad" required>
   </div>
   <div class="col-md-3">
-    <input type="text" name="costos[]" class="form-control costo-dinamico" placeholder="Costo unitario" required>
-    <div class="invalid-feedback">Debe ingresar un costo valido</div>
+    <input type="number" name="costos[]" class="form-control costo-dinamico" placeholder="Costo unitario" required>
   </div>
   <div class="col-md-1">
     <button type="button" class="btn btn-danger btn-sm btnEliminarIngrediente">🗑</button>

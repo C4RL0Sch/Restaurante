@@ -72,7 +72,7 @@ include("../conexion.php");
     <div class="modal fade" id="modalOrden" tabindex="-1" aria-labelledby="modalOrdenLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
-                <form id="formOrdenCompra" class="needs-validation" novalidate>
+                <form id="formOrdenCompra">
                     <div class="modal-header">
                         <h5 class="modal-title">Registrar Nueva Orden</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
@@ -91,14 +91,10 @@ include("../conexion.php");
                                     }
                                     ?>
                                 </select>
-                                <div class="invalid-feedback">
-                                    Debes seleccionar un proveedor.
-                                </div>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label"><b>Fecha:</b></label>
                                 <input type="date" name="fecha" class="form-control" required value="<?= date('Y-m-d') ?>">
-                                <div class="invalid-feedback">La fecha es obligatoria</div>
                             </div>
                         </div>
 

@@ -1,189 +1,148 @@
-(() => {
+$(document).ready(function () {
     let proveedorSeleccionado = null;
 
-    document.getElementById("btnNuevaOrden")?.addEventListener("click", () => {
-        fetch("ingredientes/validar_ingredientes.php")
-            .then(res => res.text())
-            .then(respuesta => {
-                if (respuesta === "OK") {
-                    const modal = new bootstrap.Modal(document.getElementById("modalOrden"));
-                    modal.show();
-                } else {
-                    alert("No puedes registrar órdenes porque no hay ingredientes registrados.");
-                }
-            })
-            .catch(err => {
-                console.error("Error al validar ingredientes:", err);
-                alert("Ocurrió un error al intentar validar ingredientes.");
-            });
+    $("#formOrdenCompra").validate({
+        rules: {
+            idProveedor: {
+                required: true
+            },
+            fecha: {
+                required: true
+            }
+        },
+        messages: {
+            idProveedor: {
+                required: "Se debe de seleccionar un proveedor valido"
+            },
+            fecha: {
+                required: "Debe indicar la fecha de la compra"
+            }
+        },
+        submitHandler: function (form) {
+            guardarCompra();
+        }
     });
 
-    document.getElementById("idProveedor").addEventListener("change", function () {
-        proveedorSeleccionado = this.value;
+    $("#btnNuevaOrden").on("click", () => {
+        $.post("ingredientes/validar_ingredientes.php", function (respuesta) {
+            if (respuesta === "OK") {
+                const modal = new bootstrap.Modal(document.getElementById("modalOrden"));
+                modal.show();
+            } else {
+                alert("No puedes registrar órdenes porque no hay ingredientes registrados.");
+            }
+        });
+    });
 
-        const container = document.getElementById("ingredientes-container");
-        container.innerHTML = "";
+    $("#idProveedor").on("change", function () {
+        proveedorSeleccionado = $(this).val();
+
+        const container = $("#ingredientes-container");
+        container.empty();
 
         if (!proveedorSeleccionado) {
-            document.getElementById("btnAgregarIngrediente").disabled = true;
+            $("#btnAgregarIngrediente").prop("disabled", true);
         } else {
-            document.getElementById("btnAgregarIngrediente").disabled = false;
+            $("#btnAgregarIngrediente").prop("disabled", false);
         }
     });
 
-    document.getElementById("btnAgregarIngrediente").addEventListener("click", function () {
+    $("#btnAgregarIngrediente").on("click", function () {
         if (!proveedorSeleccionado) return;
 
-        const form = document.getElementById('formOrdenCompra')
-        form.classList.remove('was-validated');
+        $.post(`compras/plantilla_ingredientes.php?idProveedor=${proveedorSeleccionado}`, function (html) {
+            const contenedor = $("#ingredientes-container");
+            const temp = $("<div>").html(html);
+            const grupo = temp.children().first();
 
-        fetch(` compras/plantilla_ingredientes.php?idProveedor=${proveedorSeleccionado}`)
-            .then(response => response.text())
-            .then(html => {
-                const contenedor = document.getElementById("ingredientes-container");
-                const temp = document.createElement("div");
-                temp.innerHTML = html;
-                const grupo = temp.firstElementChild;
+            contenedor.append(grupo);
 
-                contenedor.appendChild(grupo);
-
-                aplicarValidacionesDinamicas(grupo);
-
-                grupo.querySelector(".btnEliminarIngrediente").addEventListener("click", () => {
-                    grupo.remove();
-                });
+            grupo.find(".btnEliminarIngrediente").on("click", () => {
+                grupo.remove();
+                reindexarCampos();
             });
+
+            reindexarCampos();
+            validarPlantillas();
+        });
     });
 
-
-    function aplicarValidacionesDinamicas(grupo) {
-        const medidaSelect = grupo.querySelector(".medida-dinamica");
-        const cantidadInput = grupo.querySelector(".cantidad-dinamica");
-        const costoInput = grupo.querySelector(".costo-dinamico");
-
-        let valorAnteriorCantidad = "";
-        let valorAnteriorCosto = "";
-
-        function getMedidaActual() {
-            const opcionSeleccionada = medidaSelect.options[medidaSelect.selectedIndex];
-            return opcionSeleccionada ? opcionSeleccionada.dataset.medida : "";
-        }
-
-        medidaSelect.addEventListener("change", () => {
-            cantidadInput.value = "";
-            valorAnteriorCantidad = "";
+    function validarPlantillas() {
+        $(".medida-dinamica").each(function () {
+            $(this).rules("add", {
+                required: true,
+                messages: {
+                    required: "Debe seleccionar un ingrediente válido"
+                }
+            });
         });
 
-        cantidadInput.addEventListener("keypress", (e) => {
-            const medida = getMedidaActual();
-            const tecla = e.key;
-            const valor = e.target.value;
-            const permitido = "0123456789";
-
-            if (medida === "Kilogramos" || medida === "Litros") {
-                if (tecla === "." && valor.includes(".")) e.preventDefault();
-                else if (!permitido.includes(tecla) && tecla !== "." && !e.ctrlKey) e.preventDefault();
-            } else {
-                if (!permitido.includes(tecla) && !e.ctrlKey) e.preventDefault();
-            }
+        $(".cantidad-dinamica").each(function () {
+            $(this).rules("add", {
+                required: true,
+                number: true,
+                messages: {
+                    required: "Debe indicar la cantidad a comprar del ingrediente",
+                    number: "Debe ser un número válido"
+                }
+            });
         });
 
-        cantidadInput.addEventListener("input", (e) => {
-            const medida = getMedidaActual();
-            const valor = e.target.value;
-            const regex = (medida === "Kilogramos" || medida === "Litros")
-                ? /^\d{0,5}(\.\d{0,3})?$/
-                : /^\d{0,5}$/;
-
-            if (regex.test(valor)) {
-                valorAnteriorCantidad = valor;
-            } else {
-                e.target.value = valorAnteriorCantidad;
-            }
+        $(".costo-dinamico").each(function () {
+            $(this).rules("add", {
+                required: true,
+                number: true,
+                messages: {
+                    required: "Debe indicar el costo del ingrediente",
+                    number: "Debe ser un número válido"
+                }
+            });
         });
+    }
 
-        costoInput.addEventListener("keypress", (e) => {
-            const tecla = e.key;
-            const valor = costoInput.value;
-            const permitido = "0123456789";
+    function guardarCompra() {
+        const form = document.getElementById("formOrdenCompra");
 
-            if (tecla === "." && valor.includes(".")) {
-                e.preventDefault();
-            } else if (!permitido.includes(tecla) && tecla !== "." && !e.ctrlKey) {
-                e.preventDefault();
-            }
-        });
+        const datos = new FormData(form);
 
-        costoInput.addEventListener("input", (e) => {
-            const valor = e.target.value;
-            const regex = /^\d{0,5}(\.\d{0,2})?$/;
-
-            if (regex.test(valor)) {
-                valorAnteriorCosto = valor;
-            } else {
-                e.target.value = valorAnteriorCosto;
+        $.ajax({
+            url: 'compras/guardar_orden.php',
+            method: 'POST',
+            data: new FormData(document.getElementById("formOrdenCompra")),
+            processData: false,
+            contentType: false,
+            success: function (res) {
+                if (!res.includes("correctamente")) {
+                    alert(res);
+                } else {
+                    const modal = bootstrap.Modal.getInstance(document.getElementById("modalOrden"));
+                    modal.hide();
+                    cargarVista('compras.php');
+                }
+            },
+            error: function () {
+                alert("Error al guardar la orden.");
             }
         });
     }
 
+    $(".btn-ver-detalle").each(function () {
+        $(this).click(function () {
+            const id = $(this).data("id");
 
-    document.addEventListener('click', e => {
-        if (e.target.classList.contains('btnEliminarIngrediente')) {
-            e.target.closest('.grupo-ingrediente').remove();
-        }
-    });
-
-    document.getElementById('formOrdenCompra')?.addEventListener('submit', function (e) {
-        e.preventDefault();
-        e.stopPropagation();
-
-        const form = document.getElementById('formOrdenCompra')
-
-        if (!form.checkValidity()) {
-            form.classList.add('was-validated');
-            return;
-        }
-
-        const datos = new FormData(this);
-
-        fetch('compras/guardar_orden.php', {
-            method: 'POST',
-            body: datos
-        })
-            .then(res => res.text())
-            .then(res => {
-                if (!res.includes("correctamente")) {
-                    alert(res);
-                }
-                else {
-                    const modal = new bootstrap.Modal(document.getElementById("modalOrden"));
-                    modal.hide();
-                    cargarVista('compras.php');
-                }
-            })
-            .catch(err => {
-                console.error(err);
-                alert("Error al guardar la orden.");
+            $.get("compras/obtener_detalles.php?id=" + id, function (html) {
+                $("#detalleContenido").html(html);
+                const modal = new bootstrap.Modal(document.getElementById("modalDetalleOrden"));
+                modal.show();
+                console.log("MOSTRANDO");
             });
-    });
-
-    document.addEventListener("click", function (e) {
-        if (e.target.classList.contains("btn-ver-detalle")) {
-            const id = e.target.dataset.id;
-
-            fetch("compras/obtener_detalles.php?id=" + id)
-                .then(res => res.text())
-                .then(html => {
-                    document.getElementById("detalleContenido").innerHTML = html;
-                    new bootstrap.Modal(document.getElementById("modalDetalleOrden")).show();
-                });
-        }
+        });
     });
 
     const buscador = document.getElementById("buscadorOrden");
     const filtroFecha = document.getElementById("filtroFecha");
 
-    function filtrarTabla() {
+    function filtrarTablaCompras() {
         const texto = buscador.value.toLowerCase();
         const fecha = filtroFecha.value;
 
@@ -198,30 +157,23 @@
         });
     }
 
-    buscador.addEventListener("input", filtrarTabla);
-    filtroFecha.addEventListener("change", filtrarTabla);
+    buscador.addEventListener("input", filtrarTablaCompras);
+    filtroFecha.addEventListener("change", filtrarTablaCompras);
 
-    document.getElementById("btnAbrirModalReporte").addEventListener("click", () => {
-        fetch("compras/validar_compras.php")
-            .then(res => res.text())
-            .then(resp => {
-                console.log(resp);
-                if (resp.trim() === "1") {
-                    const modal = new bootstrap.Modal(document.getElementById("modalReportePDF"));
-                    modal.show();
-                } else {
-                    alert("⚠️ No se han registrado órdenes de compra aún.");
-                }
-            })
-            .catch(err => {
-                console.error("Error al verificar órdenes:", err);
-                alert("Error al verificar si hay órdenes registradas.");
-            });
+    $("#btnAbrirModalReporte").click(function () {
+        $.get("compras/validar_compras.php", function (resp) {
+            if (resp.trim() === "1") {
+                const modal = new bootstrap.Modal(document.getElementById("modalReportePDF"));
+                modal.show();
+            } else {
+                alert("⚠️ No se han registrado órdenes de compra aún.");
+            }
+        });
     });
 
-    document.getElementById("formReportePDF").addEventListener("submit", function (e) {
-        const inicio = document.getElementById("fechaInicio").value;
-        const fin = document.getElementById("fechaFin").value;
+    $("#formReportePDF").submit(function(e){
+        const inicio = $("#fechaInicio").val();
+        const fin = $("#fechaFin").val();
 
         if (!inicio || !fin) {
             e.preventDefault();
@@ -236,4 +188,11 @@
         }
     });
 
-})();
+    function reindexarCampos() {
+        $("#ingredientes-container .grupo-ingrediente").each(function (index) {
+            $(this).find("[name^='ingredientes']").attr("name", `ingredientes[${index}]`);
+            $(this).find("[name^='cantidades']").attr("name", `cantidades[${index}]`);
+            $(this).find("[name^='costos']").attr("name", `costos[${index}]`);
+        });
+    }
+});

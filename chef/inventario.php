@@ -23,7 +23,8 @@ $result = mysqli_query($conexion, "
             type="search"
             id="buscadorInventario"
             class="form-control"
-            placeholder="🔍 Buscar ingrediente...">
+            onkeyup="filtrarTabla(this, 'tablaInventario')"
+            placeholder="Buscar ingrediente...">
     </div>
 
     <table id="tablaInventario" class="table table-striped table-hover">
@@ -38,9 +39,7 @@ $result = mysqli_query($conexion, "
         </thead>
         <tbody>
             <?php while ($row = mysqli_fetch_assoc($result)):
-                $cantidad = ($row['Medida'] === 'Litros' || $row['Medida'] === 'Kilogramos')
-                    ? number_format($row['Cantidad'], 3)
-                    : (int)$row['Cantidad'];
+                $cantidad = $row['Cantidad'];
             ?>
                 <tr>
                     <td><?= htmlspecialchars($row['Nombre']) ?></td>
@@ -53,4 +52,3 @@ $result = mysqli_query($conexion, "
         </tbody>
     </table>
 </div>
-<script src="js/inventario.js"></script>

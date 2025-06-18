@@ -10,26 +10,34 @@ if (!$fechaInicio || !$fechaFin) {
     die("Faltan parámetros de filtrado.");
 }
 
-class PDF extends FPDF {
-    function Header() {
+class PDF extends FPDF
+{
+    function Header()
+    {
         $this->SetFont('Arial', 'B', 14);
         $this->Cell(0, 10, utf8_decode('Reporte de Órdenes de Compra'), 0, 1, 'C');
         $this->Ln(5);
     }
 
-    function Footer() {
+    function Footer()
+    {
         $this->SetY(-15);
-        $this->SetFont('Arial','I',8);
-        $this->Cell(0,10,'Página ' . $this->PageNo(),0,0,'C');
+        $this->SetFont('Arial', 'I', 8);
+        $this->Cell(0, 10, 'Página ' . $this->PageNo(), 0, 0, 'C');
     }
 
-    function agregarFecha($fecha) {
+    function agregarFecha($fecha)
+    {
+        // Establecer el locale a español (válido para sistemas Linux/Unix)
+        setlocale(LC_TIME, 'es_MX.UTF-8', 'es_MX', 'es', 'spanish');
+
         $this->SetFont('Arial', 'B', 11);
         $fechaFormateada = strftime("%A %d de %B del %Y", strtotime($fecha));
         $this->Cell(0, 10, utf8_decode(strtoupper($fechaFormateada)), 0, 1, 'L');
     }
 
-    function agregarOrden($orden) {
+    function agregarOrden($orden)
+    {
         $this->SetFont('Arial', '', 10);
         $this->Cell(0, 6, "Orden #{$orden['idOrden']} - Proveedor: " . utf8_decode($orden['Proveedor']), 0, 1);
         $this->Ln(2);
@@ -44,8 +52,8 @@ class PDF extends FPDF {
         $this->SetFont('Arial', '', 9);
         $total = 0;
         foreach ($orden['detalles'] as $detalle) {
-            $cantidad = ($detalle['Medida'] === "Litros" || $detalle['Medida'] === "Kilogramos") 
-                ? number_format($detalle['Cantidad'], 3) 
+            $cantidad = ($detalle['Medida'] === "Litros" || $detalle['Medida'] === "Kilogramos")
+                ? number_format($detalle['Cantidad'], 3)
                 : number_format($detalle['Cantidad'], 0);
 
             $subtotal = $detalle['Cantidad'] * $detalle['CostoUnitario'];
@@ -65,7 +73,7 @@ class PDF extends FPDF {
     }
 }
 
-if(!$idProveedor){
+if (!$idProveedor) {
     $query = "
     SELECT o.idOrden, o.Fecha, p.Nombre AS Proveedor
     FROM ordenes_compra o
@@ -73,8 +81,7 @@ if(!$idProveedor){
     WHERE o.Fecha BETWEEN '$fechaInicio' AND '$fechaFin'
     ORDER BY o.Fecha DESC, o.idOrden DESC
 ";
-}
-else{
+} else {
     $query = "
     SELECT o.idOrden, o.Fecha, p.Nombre AS Proveedor
     FROM ordenes_compra o
@@ -121,4 +128,3 @@ foreach ($ordenesAgrupadas as $fecha => $ordenes) {
 }
 
 $pdf->Output("I", "reporte_compras.pdf");
-?>

@@ -29,26 +29,29 @@ if (isset($_SESSION['usuario']) && $_SESSION['usuario'] instanceof Usuario) {
         <div class="col-md-4 mx-auto rounded border p-3">
         <img src="img/logo.png" alt="Usuario" width="64" height="64" class="mb-2 d-block mx-auto">
         <h1 class="text-center mb-4">Iniciar Sesión</h1>
-        <div id="error" class="alert alert-danger text-center d-none" role="alert"></div>
         <form id="form-login">
             <div class="row">
                 <label for="usuario" class="form-label"><b>Usuario:</b></label>
-                <input class="form-control" type="text" id="usuario" name="usuario">
+                <input class="form-control" type="text" id="usuario" name="usuario" required>
             </div>
             <div class="row mt-3">
                 <label class="form-label" for="password"><b>Contraseña:</b></label>
-                <input class="form-control" type="password" id="password" name="password">
+                <input class="form-control" type="password" id="password" name="password" required>
             </div>
             <div class="row mt-3">
                 <div class="col d-grid">
                     <button type="reset" class="btn btn-outline-secondary">Cancelar</button>
                 </div>
                 <div class="col d-grid">
-                    <button type="button" class="btn btn-primary" onclick="validar()">Entrar</button>
+                    <button type="submit" class="btn btn-primary">Entrar</button>
                 </div>
         </form>
         </div>
     </div>
 </body>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" 
+integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" 
+crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js"></script>
 <script src="index.js"></script>
 </html>

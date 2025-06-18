@@ -1,48 +1,47 @@
+$(document).ready(function () {
 
-function validar(){
-    let usuario = document.getElementById("usuario").value
-
-    let contra = document.getElementById("password").value
-
-    //console.log(`usuario: ${usuario} contraseña: ${contra}`)
-
-    if(usuario==""){
-        document.getElementById("error").innerHTML = "El campo usuario no puede estar vacío"
-        document.getElementById("error").classList.remove("d-none")
-        return false
-    }
-
-    if(contra==""){
-        document.getElementById("error").innerHTML = "El campo contraseña no puede estar vacío"
-        document.getElementById("error").classList.remove("d-none")
-        return false
-    }
-
-    document.getElementById("error").classList.add("d-none")
-    iniciarSesion(usuario, contra)
-}
-
-function iniciarSesion(user, password){
-    formData = new FormData()
-    formData.append("usuario", user)
-    formData.append("password", password)
-
-    fetch("login.php", {
-        method: "POST",
-        body: formData
-    })
-    .then(res => res.text())
-    .then(respuesta => {
-        if (respuesta.startsWith("ERROR:")) {
-            document.getElementById("error").innerHTML = respuesta.replace("ERROR:", "").trim();
-            document.getElementById("error").classList.remove("d-none");
-        } else {
-            console.log(respuesta)
-            window.location.href = respuesta;
+    $("#form-login").validate({
+        rules: {
+            usuario: {
+                required: true
+            },
+            password: {
+                required: true
+            }
+        },
+        messages: {
+            usuario: {
+                required: "Debe ingresar un usuario",
+            },
+            password: {
+                required: "Debe ingresar una contraseña"
+            }
+        },
+        submitHandler: function () {
+            iniciarSesion();
         }
-    })
-    .catch(err => {
-        document.getElementById("error").innerHTML ="Ocurrió un error";
-        console.error(err);
     });
-}
+
+    function iniciarSesion() {
+        let user = $("#usuario").val();
+        let password = $("#password").val();
+
+        const datos = {
+            usuario: user,
+            password: password
+        };
+
+        $.post("login.php", datos, function (respuesta) {
+            if (respuesta.startsWith("ERROR:")) {
+                $('#usuario').focus();
+                $("#form-login").validate().showErrors({
+                    usuario: respuesta.replace("ERROR:", "").trim()
+                });
+                return;
+            } else {
+                console.log(respuesta)
+                window.location.href = respuesta;
+            }
+        });
+    }
+});

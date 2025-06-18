@@ -99,29 +99,24 @@ $chef_result = mysqli_query($conexion, "SELECT * FROM usuarios WHERE Rol = 'chef
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <!--<input type="hidden" id="usuario-id" name="id">-->
                     <input type="hidden" id="usuario-rol" name="rol">
 
                     <div class="mb-2">
                         <label for="usuario-id" class="form-label px-0 mb-0"><b>ID:</b></label>
                         <input type="text" maxlength="10" class="form-control" id="usuario-id" name="id" placeholder="ID del ingrediente">
-                        <span id="error-id" class="text-danger d-none"></span>
                     </div>
 
                     <div class="mb-2">
                         <label for="nombre" class="form-label"><b>Nombre:</b></label>
                         <input type="text" maxlength="70" class="form-control" id="usuario-nombre" name="nombre" placeholder="Nombre completo">
-                        <span id="error-nombre" class="text-danger d-none"></span>
                     </div>
                     <div class="mb-2">
                         <label for="usuario" class="form-label"><b>Usuario:</b></label>
                         <input type="text" maxlength="30" class="form-control" id="usuario-usuario" name="usuario" placeholder="Nombre de usuario">
-                        <span id="error-usuario" class="text-danger d-none"></span>
                     </div>
                     <div class="mb-2" id="password-group">
                         <label for="contra" class="form-label"><b>Contraseña:</b></label>
                         <input type="password" maxlength="30" class="form-control" id="usuario-contra" name="contra">
-                        <span id="error-contra" class="text-danger d-none"></span>
                     </div>
                 </div>
                 <div class="modal-footer">

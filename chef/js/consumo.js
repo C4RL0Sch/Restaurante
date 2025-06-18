@@ -1,93 +1,99 @@
-(() => {
-    document.getElementById("btnAgregarConsumo").addEventListener("click", () => {
-        const form = document.getElementById('formConsumo')
-        form.classList.remove('was-validated');
+$(document).ready(function () {
 
-        fetch('plantilla_consumo.php')
-            .then(r => r.text())
-            .then(html => {
-                const cont = document.getElementById("consumo-container");
-                const tmp = document.createElement("div");
-                tmp.innerHTML = html;
-                const grp = tmp.firstElementChild;
-                cont.appendChild(grp);
-                inicializarValidaciones(grp);
-            });
-    });
-
-    document.addEventListener("click", e => {
-        if (e.target.classList.contains("btn-eliminar-consumo")) {
-            e.target.closest(".grupo-consumo").remove();
-        }
-        
-        if (e.target.classList.contains("btn-ver-consumo")) {
-            const id = e.target.dataset.id;
-            fetch(`consumo/obtener_detalle.php?id=${id}`)
-                .then(r => r.text())
-                .then(html => {
-                    document.getElementById("detalleConsumo").innerHTML = html;
-                    new bootstrap.Modal(document.getElementById("modalVerConsumo")).show();
-                });
-        }
-    });
-
-    document.getElementById("formConsumo").addEventListener("submit", e => {
+    $("#formConsumo").submit(function(e) {
         e.preventDefault();
         e.stopPropagation();
 
-        const form = document.getElementById('formConsumo')
-
-        if (!form.checkValidity()) {
-            form.classList.add('was-validated');
-            return;
-        }
-
         const datos = new FormData(e.target);
 
-        const grupos = document.querySelectorAll(".grupo-consumo");
+        const grupos = $(".grupo-consumo");
         if (grupos.length === 0) {
             e.preventDefault();
             alert("⚠️ Debes agregar al menos un ingrediente antes de guardar.");
             return;
         }
 
-        fetch('consumo/guardar_consumo.php', { method: 'POST', body: datos })
-            .then(r => r.text())
-            .then(msg => {
+        $.ajax({
+            url: 'consumo/guardar_consumo.php',
+            method: 'POST',
+            data: datos,
+            processData: false,
+            contentType: false,
+            success: function (msg) {
                 alert(msg);
                 let modal = bootstrap.Modal.getInstance(document.getElementById("modalConsumo"))
                 modal.hide();
                 cargarVista('consumo.php');
-            });
+            },
+            error: function () {
+                alert("Error al guardar el consumo.");
+            }
+        });
     });
 
-    document.getElementById("btnNuevoConsumo").addEventListener("click", () => {
-        document.getElementById("consumo-container").innerHTML = "";
+    $("#btnAgregarConsumo").click(function () {
+        $.get('plantilla_consumo.php', function (html) {
+            const cont = $("#consumo-container");
+            const tmp = $("<div>");
+            tmp.html(html);
+            const grp = tmp.children().first();
+
+            cont.append(grp);
+
+            grp.find(".btn-eliminar-consumo").on("click", () => {
+                grp.remove();
+                reindexarCampos();
+            });
+
+            reindexarCampos();
+            validarPlantillas();
+        });
+    });
+
+    $(".btn-ver-consumo").each(function () {
+        $(this).click(function () {
+            const id = $(this).data("id");
+
+            $.get(`consumo/obtener_detalle.php?id=${id}`, function (html) {
+                $("#detalleConsumo").html(html);
+                const modal = new bootstrap.Modal(document.getElementById("modalVerConsumo"));
+                modal.show();
+                console.log("MOSTRANDO");
+            });
+        });
+    });
+
+    $("#btnNuevoConsumo").click(function() {
+        $("#consumo-container").html("");
         new bootstrap.Modal(document.getElementById("modalConsumo")).show();
     });
 
-    function inicializarValidaciones(grupo) {
-        const sel = grupo.querySelector(".select-consumo");
-        const inp = grupo.querySelector(".input-cant");
-        let prev = '';
-        sel.addEventListener("change", () => { inp.value = ''; prev = ''; });
-        inp.addEventListener("keypress", e => {
-            const m = sel.options[sel.selectedIndex].dataset.medida;
-            const t = e.key, v = inp.value, p = "0123456789";
-            if (m === "Litros" || m === "Kilogramos") {
-                if (t === "." && v.includes(".")) e.preventDefault();
-                else if (!p.includes(t) && t !== '.') e.preventDefault();
-            } else {
-                if (!p.includes(t)) e.preventDefault();
-            }
-        });
-        inp.addEventListener("input", e => {
-            const m = sel.options[sel.selectedIndex].dataset.medida;
-            const v = e.target.value;
-            const re = (m === "Litros" || m === "Kilogramos")
-                ? /^\d{0,5}(\.\d{0,3})?$/
-                : /^\d{0,5}$/;
-            if (re.test(v)) prev = v; else e.target.value = prev;
+    function reindexarCampos() {
+        $("#consumo-container .grupo-consumo").each(function (index) {
+            $(this).find("[name^='ingredientes']").attr("name", `ingredientes[${index}]`);
+            $(this).find("[name^='cantidades']").attr("name", `cantidades[${index}]`);
         });
     }
-})();
+
+    function validarPlantillas() {
+        $(".select-consumo").each(function () {
+            $(this).rules("add", {
+                required: true,
+                messages: {
+                    required: "Debe seleccionar un ingrediente válido"
+                }
+            });
+        });
+
+        $(".input-cant").each(function () {
+            $(this).rules("add", {
+                required: true,
+                number: true,
+                messages: {
+                    required: "Debe indicar la cantidad a comprar del ingrediente",
+                    number: "Debe ser un número válido"
+                }
+            });
+        });
+    }
+});

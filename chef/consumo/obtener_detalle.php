@@ -16,9 +16,7 @@ $res = mysqli_query($conexion,
    WHERE d.idConsumo=$id"
 );
 while($r=mysqli_fetch_assoc($res)){
-  $qty = in_array($r['Medida'],['Litros','Kilogramos'])
-       ? number_format($r['Cantidad'],3)
-       : intval($r['Cantidad']);
-  echo "<tr><td>{$r['Nombre']}</td><td>$qty {$r['Medida']}</td></tr>";
+  $cantidad = $r['Cantidad'];
+  echo "<tr><td>{$r['Nombre']}</td><td>$cantidad {$r['Medida']}</td></tr>";
 }
 echo "</tbody></table>";
